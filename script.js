@@ -35,7 +35,7 @@ require([
     view.ui.add(legend, {position: "bottom-right"});
 
     let query = f1.createQuery();
-    query.where = "MAGNITUDE > '4' ";
+    query.where = "MAGNITUDE > 4 ";
     query.outFields = ['*'];
     query.returnGeometry = true;
 
