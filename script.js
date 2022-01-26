@@ -42,7 +42,7 @@ require([
     f1.queryFeatures(query)
     .then(response => {
         console.log(response);
-        getResults(response.FID);
+        getResults(response.feature);
     })
     .catch(err => {
         console.log(err);
@@ -55,10 +55,10 @@ require([
         size: 7
     };
 
-    FID.map(elem => {
+    feature.map(elem => {
     elem.symbol = symbol
     });
 
-    gl.addMany(FID);
+    gl.add(feature);
     }
 });
