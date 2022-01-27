@@ -3,8 +3,9 @@ require([
     'esri/views/SceneView',
     'esri/layers/FeatureLayer',
     'esri/layers/GraphicsLayer',
-    'esri/widgets/Legend'
-], (Map, SceneView,FeatureLayer,GraphicsLayer,Legend) => {
+    'esri/widgets/Legend',
+    'esri/renderers/SimpleRenderer'
+], (Map, SceneView,FeatureLayer,GraphicsLayer,Legend, SimpleRenderer, ColorVariable ) => {
 
     const map1 = new Map({
         basemap: "topo-vector" 
@@ -14,11 +15,11 @@ require([
         url: "https://services.arcgis.com/ue9rwulIoeLEI9bj/ArcGIS/rest/services/Earthquakes/FeatureServer/0"
     });
 
-    let gl = new GraphicsLayer();
-
     const f2 = new FeatureLayer({
         url: "https://services.arcgis.com/ue9rwulIoeLEI9bj/ArcGIS/rest/services/Earthquakes/FeatureServer/0"
-    })
+    });
+
+    let gl = new GraphicsLayer();
 
     const view = new SceneView({
         map:map1,
@@ -26,7 +27,7 @@ require([
         zoom:5
     });
 
-    map1.addMany([f1,f2,gl]);
+    map1.addMany([f2,gl]);
 
     const legend = new Legend({
         view: view
@@ -42,23 +43,70 @@ require([
     f1.queryFeatures(query)
     .then(response => {
         console.log(response);
-        getResults(response.feature);
+        getResults(response.features);
     })
     .catch(err => {
         console.log(err);
     });
 
-    const getResults = (FID) => {
-    const symbol = {
-        type: "simple-marker",
-        color: "blue",
-        size: 7
+    const getResults = (features) => {
+        const symbol = {
+            type: "simple-marker",
+            color: "blue",
+            size: 20
+        };
+
+        features.map(elem => {
+            elem.symbol = symbol
+        });
+
+        gl.addMany(features);
     };
 
-    feature.map(elem => {
-    elem.symbol = symbol
-    });
+    const simpleRenderer = {
+        type: 'simple',
+        symbol: {
+            type: "point-3d",
+            symbolLayers:[
+                {
+                    type: "object",
+                    resource: {
+                        primitive: "cylinder"
+                    },
+                    width: 25000
+                }
+            ]
+        },
+        visualVariables: [
+            {
+                type: "color",
+                field: "MAGNITUDE",
+                stops: [{
+                        value: 0.5,
+                        color: "green"
+                    },
+                    {
+                        value: 4.48,
+                        color: "red"
+                    }
+                ]
+            },
+            {
+                type: "size",
+                field: "DEPTH",
+                stops: [
+                    {
+                        value: -3.39,
+                        size: 10000
+                    },
+                    {
+                        value: 30.97,
+                        size: 80000
+                    }
+                ]
+            }
+        ]
+    };
 
-    gl.add(feature);
-    }
+    f2.renderer=simpleRenderer;
 });

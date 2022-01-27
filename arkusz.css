@@ -1,9 +1,11 @@
-p{
+#tekst{
     font-size: medium;
+    text-align: center;
+    font-weight: bold;
 }
 
 #mapDiv {
-    height: 1000px;
+    height: 800px;
     width: 100%;
     padding: 5px;
 }
